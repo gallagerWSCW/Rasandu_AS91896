@@ -4,6 +4,7 @@ print("In this game, you and the program take turns. When it's your turn to stri
 def play_turn(user_turn,target_score=None):
     times_gotcorrect=0
     score=0
+    got_out=False
     if user_turn:
         print("Now you are striking.")
         if target_score is not None:
@@ -25,6 +26,7 @@ def play_turn(user_turn,target_score=None):
                 if user_turn:
                     if guess==input_no:
                         print("The program guessed it. You have lost. {} is your final score. {} is how many times you have played it without letting the program guess your number".format(score,times_gotcorrect))
+                        got_out=True
                         break
                     else:
                         print("The program didn't guess it. {} is what the program guesssed".format(guess))
@@ -33,6 +35,7 @@ def play_turn(user_turn,target_score=None):
                 else:
                     if guess==input_no:
                         print("You guessed the correct number. {} is the program's final score. {} is how many times the program has played without letting you guess its number".format(score,times_gotcorrect))
+                        got_out=True
                         break
                     else:
                         print("Your guess is wrong. {} is what the program thought".format(guess))
@@ -42,23 +45,34 @@ def play_turn(user_turn,target_score=None):
                 print("please enter a number between 1-5")
         except ValueError:
             print("Invalid input")
-    return score
+    return score,got_out
 while True:
     try:
         selction=input("What do you wanna do first? If you wanna strike frst, please type 1. If you wanna guess the program's number first, please type 2.").strip()
         if selction=="1":
-            user_score=play_turn(user_turn=True)
-            program_score=play_turn(user_turn=False, target_score=user_score+1)
+            user_score, user_out=play_turn(user_turn=True)
+            program_score, program_out=play_turn(user_turn=False, target_score=user_score+1)
             break
         elif selction=="2":
-            program_score=play_turn(user_turn=False)
-            user_score=play_turn(user_turn=True, target_score=program_score+1)
+            program_score,program_out=play_turn(user_turn=False)
+            user_score,user_out=play_turn(user_turn=True, target_score=program_score+1)
             break
         else:
             print("Please enter 1 or 2")
     except ValueError:
         print("Invalid input")
+
 if user_score>program_score:
-    print("Congratulations you won this game!!!!. You won by {} runs".format(user_score-program_score))
+    if not user_out:
+        print("Congratulations you won this game without getting out!!!")
+    else:
+        print("Congratulations you won this game!!!!. You won by {} runs".format(user_score-program_score))
+elif user_score==program_score:        
+    print("The game is drawn. Great effort!!!")
 else:
-    print("You lost this game!!!!. You lost by {} runs".format(program_score-user_score))
+    if not program_out:
+        print("The program win the game without getting out")
+    else:
+        print("You lost this game!!!!. You lost by {} runs".format(program_score-user_score))
+
+
